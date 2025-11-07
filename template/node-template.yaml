@@ -49,7 +49,7 @@ spec:
               - github.com
             allowedOwners:
               - chpkt-labs
-steps:
+  steps:
     - id: fetchBase
       name: Fetch Base
       action: fetch:template
