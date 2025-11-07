@@ -1,0 +1,71 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+# some metadata about the template itself
+metadata:
+  name: nodejs-template
+  title: NodeJS Service
+  description: Template to create a NodeJS based Backstage service
+spec:
+  owner: my-team
+  type: service
+
+parameters:
+    - title: Basic Information
+      required:
+        - name
+        - description
+      properties:
+        name:
+          title: Name
+          type: string
+          description: Unique name of the Service
+        description:
+          title: Description
+          type: string
+          description: A short description of the Service
+        owner:
+          title: Owner
+          type: string
+          description: Owner of the component
+          ui:field: OwnerPicker
+          ui:options:
+            catalogFilter:
+              kind: Group
+    - title: Repository location
+      required:
+        - repoUrl
+      properties:
+        repoUrl:
+          title: Repository Location
+          type: string
+          ui:field: RepoUrlPicker
+          ui:options:
+            requestUserCredentials:
+              secretsKey: USER_OAUTH_TOKEN
+              additionalScopes:
+                github:
+                  - workflow
+            allowedHosts:
+              - github.com
+            allowedOwners:
+              - chpkt-labs
+steps:
+    - id: fetchBase
+      name: Fetch Base
+      action: fetch:template
+      input:
+        url: ../template-base
+        values:
+          name: ${{ parameters.name }}
+          description: ${{ parameters.description }}
+          owner: ${{ parameters.owner }}
+ 
+    - id: publish-repo
+      name: Publish Repository
+      action: publish:github
+      input:
+        gitAuthorName: ${{ user.entity.metadata.name }}
+        gitAuthorEmail: ${{ user.entity.spec.profile.email }}
+        repoUrl: ${{ parameters.repoUrl }}
+        description: ${{ parameters.description }}
+        token: ${{ secrets.USER_OAUTH_TOKEN }}
