@@ -9,7 +9,7 @@ spec:
   owner: my-team
   type: service
 
-parameters:
+  parameters:
     - title: Basic Information
       required:
         - name
